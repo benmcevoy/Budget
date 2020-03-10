@@ -5,10 +5,13 @@ To make a tag create a txt file named as the tag name, e.g. Coffee.txt
 In the file put the "contains snippet".
 
 e.g.
+```
 Cafe
 local espresso
+
 # this shop has the best coffee
 Grind House
+```
 
 To create a group of tags, make a folder and put the files for the tags in it, eg a Folder called "Food" with the "Coffee.txt" file in it.
 
