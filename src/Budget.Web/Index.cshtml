@@ -5,9 +5,11 @@
     <link rel="stylesheet" type="text/css" href="css/reset.css" />
     <link rel="stylesheet" type="text/css" href="css/theme.css" />
 
+    <script src="js/Datasources.js"></script>
     <script src="js/Facets.js" type="module"></script>
     <script src="js/SingleValueFacet.js" type="module"></script>
-
+    <script src="js/MultipleValueFacet.js" type="module"></script>
+    
     <script src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
@@ -21,20 +23,38 @@
             <single-value-facet title="Date range"
                                 name="dateRange"
                                 value="LastMonth"
-                                options='["Today", "LastSevenDays", "LastMonth", "LastSixMonths", "YearToDate", "LastYear", "LastFiveYears", "All"]'>
+                                options="datasources.dateRange">
             </single-value-facet>
 
             <single-value-facet title="Date resolution"
                                 name="dateResolution"
                                 value="Day"
-                                options='["Day", "Week", "Month", "Year", "All"]'>
+                                options="Day,Week,Month,Year,All">
             </single-value-facet>
+
+            <multiple-value-facet title="Tags"
+                                  name="tags"
+                                  value="[]"
+                                  options="datasources.tags">
+            </multiple-value-facet>
 
             <input type="submit" value="Submit" />
         </div>
     </form>
+    
+<pre>
+TODO:
 
-    <div id="chart"></div>
+move towards a richer dataTable
+    - want to drill down into individual tx
+    - want to be able to change chart types (another facet)
+    
+
+
+
+</pre>
+
+<div id="chart"></div>
 
     <script src="js/App.js" type="text/javascript"></script>
 

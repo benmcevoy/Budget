@@ -2,7 +2,6 @@
 
 class singleValueFacet extends facet {
     render() {
-        const options = JSON.parse(this.props.options);
         const checked = (o) => o === this.props.value ? "checked='checked'" : "";
         const items = (values) => values.map(x =>
             `<div><label><input type="radio" name="${this.props.name}" ${checked(x)} value="${x}" />${x}</label></div>`)
@@ -11,7 +10,7 @@ class singleValueFacet extends facet {
         return `
 <div id="${this.id}" class="component facet single-value">
     <h3>${this.props.title}</h3>
-    ${items(options)}
+    ${items(this.options())}
 </div>`;
     }
 

@@ -43,6 +43,23 @@ namespace Budget.Westpac
             return _taggers;
         }
 
+        public string[] Tags()
+        {
+            // TODO: this _other strinbg is magic - should be up in the main assembly somewhere
+            var tags = new List<string> {"_Other"};
+            
+            var files = Directory.EnumerateFiles(_path);
+
+            foreach (var file in files)
+            {
+                if (!file.EndsWith(".txt")) continue;
+
+                tags.Add(Path.GetFileNameWithoutExtension(file));
+            }
+
+            return tags.ToArray();
+        }
+
         private readonly string _path;
         private Func<string, string>[] _taggers;
     }

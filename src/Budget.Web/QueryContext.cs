@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Budget.Facets;
 using Microsoft.AspNetCore.Builder;
@@ -21,7 +23,10 @@ namespace Budget.Web
                 DateResolution =
                     Enum.TryParse<Dates.Resolution>(context.Request.Query["dateResolution"], out var resolution)
                         ? resolution
-                        : Dates.Resolution.Day
+                        : Dates.Resolution.Day,
+                Tags = (context.Request.Query["tags"].ToString() ?? "")
+                    .Split(new[]{','}, StringSplitOptions.RemoveEmptyEntries)
+                    .ToList()
             };
 
             context.Items[GetType()] = instance;
@@ -38,6 +43,7 @@ namespace Budget.Web
     {
         public Dates.Range DateRange { get; set; } = Dates.Range.LastMonth;
         public Dates.Resolution DateResolution { get; set; } = Dates.Resolution.Day;
+        public List<string> Tags { get; set; } = new List<string>();
     }
 
     public static class QueryContextExtensions

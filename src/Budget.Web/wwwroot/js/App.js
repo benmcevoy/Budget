@@ -29,7 +29,7 @@
                 };
 
                 new google.visualization
-                    .BarChart(document.getElementById('chart'))
+                    .ColumnChart(document.getElementById('chart'))
                     .draw(data, options);
             });
     };

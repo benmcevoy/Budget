@@ -3,5 +3,7 @@
     public interface ITagsProvider
     {
         System.Func<string, string>[] Taggers();
+
+        string[] Tags();
     }
 }

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
 using Budget.Facets;
 using Budget.Statements;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Budget.Web
 {
@@ -26,7 +21,8 @@ namespace Budget.Web
 
             var transactions = _service
                 .Transactions()
-                .DebitInRange(query)
+                .InRange(query)
+                .WithTags(query)
                 .ToList();
 
             var cols = DataColumns(transactions);
