@@ -16,23 +16,25 @@
         <a href="/transactions">transactions</a>
     </div>
 
-<div id="facets">
-    <single-value-facet title="Date range"
-                        name="dateRange"
-                        value="LastMonth"
-                        options='["Today", "LastSevenDays", "LastMonth", "LastSixMonths", "YearToDate", "LastYear", "LastFiveYears", "All"]'>
-    </single-value-facet>
+    <form id="main" method="get" action="/transactions">
+        <div id="facets">
+            <single-value-facet title="Date range"
+                                name="dateRange"
+                                value="LastMonth"
+                                options='["Today", "LastSevenDays", "LastMonth", "LastSixMonths", "YearToDate", "LastYear", "LastFiveYears", "All"]'>
+            </single-value-facet>
 
-    <single-value-facet title="Date resolution"
-                        name="dateResolution"
-                        value="Day"
-                        options='["Day", "Week", "Month", "Year", "All"]'>
-    </single-value-facet>
-</div>
+            <single-value-facet title="Date resolution"
+                                name="dateResolution"
+                                value="Day"
+                                options='["Day", "Week", "Month", "Year", "All"]'>
+            </single-value-facet>
 
-<h3>TODO: need a form of some sort. or javascript</h3>
+            <input type="submit" value="Submit" />
+        </div>
+    </form>
 
-<div id="chart"></div>
+    <div id="chart"></div>
 
     <script src="js/App.js" type="text/javascript"></script>
 

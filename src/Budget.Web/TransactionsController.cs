@@ -1,12 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
 using Budget.Facets;
+using Budget.Statements;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Budget.Web
 {
     [ApiController]
-    public class TransactionsController 
+    public class TransactionsController
     {
         private readonly Service _service;
         public TransactionsController(Service service) => _service = service;
@@ -15,58 +21,109 @@ namespace Budget.Web
         public object Get()
         {
             // google charts wants the data as
-
-            // [
-            //  [ columnanmes, etc ],
-            //  [ data row]
-
-            // i think I want to break this down a bit
-            // i still don't feel the linq groupBy
-
-            // PIVOT was what I thought
-            // date, sum(value), Tag
-            //      sum(value), Tag
-            //      sum(value), Tag
-            //      sum(value), Tag
-
+            // a dataTable
             var query = QueryContext.Query;
 
-            var lastMonthsDebitTransactions = _service
+            var transactions = _service
                 .Transactions()
-                .Where(t => t.Amount.IsDebit())
-                .Where(t => Dates.InRange(t, query.DateRange))
+                .DebitInRange(query)
                 .ToList();
 
-            var columns = new object[] { "Tags" }.Concat(
-                        lastMonthsDebitTransactions
-                        .Select(transaction => transaction.Tags.First())
-                        .Distinct()
-                        .OrderBy(s => s)
-                    )
+            var cols = DataColumns(transactions);
+
+            var rows = DataRows(transactions, cols, query);
+
+            return new DataTable { Cols = cols, Rows = rows };
+        }
+
+        [Route("/transactions/Other")]
+        public object Unclassified()
+        {
+            var transactions = _service
+                .Transactions()
                 .ToList();
 
+            return transactions.Where((transaction, i) => transaction.Tags.Any(s => s.Equals("Other")));
+        }
 
-            var groups = lastMonthsDebitTransactions
+        private static IEnumerable<IEnumerable<object>> DataRows(IEnumerable<Transaction> transactions, ICollection<DataColumn> cols, Query query)
+        {
+            // group into histogram
+            var source = transactions
                 .GroupBy(
                     t => Dates.Scale(t, query.DateResolution),
-                    t => new{ t.Amount, Tag = t.Tags.First() },
-                    (key, g) => new { Date = key, Transaction = g }
-                )
-                .OrderByDescending(arg => arg.Date)
-                ;
-
-
-            // and pivot?
-            // https://www.nrecosite.com/pivot_data_library_net.aspx
-            // https://www.reflectionit.nl/Blog/2009/c-linq-pivot-function
-
-
-            var result = new
+                    t => new { Key = t.Date, Value = t.Amount, Tag = t.Tags.First() },
+                    (key, g) => new { Date = key, Transactions = g })
+                .OrderByDescending(x => x.Date);
+            
+            // foreach col sum up
+            foreach (var g in source)
             {
-                data = new List<object> { columns }
-            };
+                var row = new List<object> {g.Date};
+                
+                foreach (var dataColumn in cols.Skip(1))
+                {
+                    row.Add(g.Transactions
+                        .Where(arg => arg.Tag == dataColumn.Label)
+                        .Sum(arg => arg.Value));
+                }
 
-            return result;
+                yield return row;
+            }
+        }
+
+        private static ICollection<DataColumn> DataColumns(IEnumerable<Transaction> transactions)
+        {
+            var cols = transactions
+                .Select(transaction => transaction.Tags.First())
+                .Distinct()
+                .OrderBy(s => s)
+                .Select(s => new DataColumn { Label = s, Type = DataColumnType.Number });
+
+            return new[]
+            {
+                new DataColumn
+                {
+                    Type = DataColumnType.String,
+                    Label = "Date"
+                }
+            }.Concat(cols).ToList();
+        }
+
+        public class DataTable
+        {
+            public IEnumerable<DataColumn> Cols { get; set; }
+            public IEnumerable<object> Rows { get; set; }
+        }
+
+        public class DataColumn
+        {
+            public string Type { get; set; }
+            public string Label { get; set; }
+            public string Id { get; set; }
+            public string Role { get; set; }
+            public string Pattern { get; set; }
+        }
+
+        public class DataColumnType
+        {
+            public const string String = "string";
+            public const string Number = "number";
+            public const string Boolean = "boolean";
+            public const string Date = "date";
+            public const string DateTime = "datetime";
+            public const string TimeOfDay = "timeofday";
+        }
+        public class DataColumnRole
+        {
+            public const string Annotation = "annotation";
+            public const string AnnotationText = "annotationText";
+            public const string Certainty = "certainty";
+            public const string Emphasis = "emphasis";
+            public const string Interval = "interval";
+            public const string Scope = "scope"; 
+            public const string Style = "style";
+            public const string Tooltip = "tooltip";
         }
     }
 }

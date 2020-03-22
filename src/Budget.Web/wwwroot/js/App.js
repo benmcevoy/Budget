@@ -1,8 +1,4 @@
 ﻿(() => {
-
-    google.charts.load('current', { packages: ['corechart'] });
-    google.charts.setOnLoadCallback(drawChart);
-
     var query = function () {
         let result = "";
 
@@ -13,11 +9,12 @@
         return result;
     };
 
-    function drawChart() {
-        fetch(`/transactions?${query()}`).then(r => r.json())
+    var drawChart = function() {
+        fetch(`/transactions?${query()}`)
+            .then(r => r.json())
             .then((json) => {
-                var columns = json.rows[0].concat([{ role: 'annotation' }]);
-                var rows = json.rows.slice(1);
+                var columns = json.cols;
+                var rows = json.rows;
 
                 var data = google.visualization.arrayToDataTable([
                     columns,
@@ -35,6 +32,17 @@
                     .BarChart(document.getElementById('chart'))
                     .draw(data, options);
             });
-    }
+    };
+
+    // attach to form and hijack submit
+    document.querySelector("#main").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+    });
+
+    
 })();
 

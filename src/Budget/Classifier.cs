@@ -33,7 +33,7 @@ namespace Budget
                 transaction.AddTag(c);
             }
 
-            if (!transaction.Tags.Any()) transaction.AddTag("Other");
+            if (!transaction.Tags.Any()) transaction.AddTag("_Other");
 
             return transaction;
         }

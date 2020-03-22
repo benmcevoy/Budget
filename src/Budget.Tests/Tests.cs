@@ -22,13 +22,13 @@ namespace Budget.Tests
         public void Normalized_narrative_strings_are_normal()
         {
             // arrange
-            var sut = "\"EFTPOS DEBIT 0913441 MV Chi Pty Ltd Seddon        07/12\"";
+            var sut = "\"EFTPOS DEBIT 1234556 MV Chi Pty Ltd Seddon        07/12\"";
 
             // act
             var result = sut.NormalizeString();
 
             // assert
-            Assert.AreEqual("eftpos debit 0913441 mv chi pty ltd seddon 07 12", result);
+            Assert.AreEqual("eftpos debit 1234556 mv chi pty ltd seddon 07 12", result);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace Budget.Tests
             var sut = Classifier.Contains("Coles", "FOODWORKS", "Happy Apple")("Food");
 
             // act
-            var result = sut(@"EFTPOS DEBIT 0036502 HAPPY APPLE SEDDON \ SEDDON          16 / 01");
+            var result = sut(@"EFTPOS DEBIT 1234556 HAPPY APPLE SEDDON \ SEDDON          16 / 01");
 
             // assert
             Assert.AreEqual("Food", result);
